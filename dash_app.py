@@ -17,7 +17,7 @@ import pandas as pd
 app = dash.Dash(__name__, title='my pomodoros')
 
 #dense nightowl user data
-my_path = '/home/hanbo/Documents/stochastic-sage-student-code/pomodash/data/data_0.txt'
+my_path = 'data/data_0.txt'
 
 #sparse narrow user data
 #my_path = '/home/hanbo/Documents/stochastic-sage-student-code/pomodash/data/data_5.txt'
@@ -48,6 +48,9 @@ total_per_topic.reset_index(inplace=True)
 fig_total = px.bar(total_per_topic, x = 'task', y='pomodoros',
                    title=f'Total Pomodoros {year} per Task',
                    color="task")
+fig_total.update_layout(
+    font_color="#606060"
+    )
 
 #Monthly Pomodoros per topic for second chart
 monthly_per_topic = pd.DataFrame(df[df['task'] != '0']\
@@ -63,7 +66,13 @@ fig_monthly_per_topic = px.bar(monthly_per_topic, x = "task", y = "pomodoros",
                                                 "February", "March", "April",
                                                 "May", "June", "July", "August",
                                                 "September", "October",
-                                                "November", "December"]})
+                                                "November", "December"]},
+                     labels={'pomodoros':'pom'})
+fig_monthly_per_topic.for_each_annotation(lambda a: a.update(text=a.text.split("=")[1]))
+fig_monthly_per_topic.update_layout(
+    font_color="#606060"
+    )
+
 
 
 
@@ -85,7 +94,7 @@ app.layout = html.Div(id='page-container', children=[
     
     html.Div(className="containerHeader", children=[
         html.Div(className="logoContainer",
-                 children=[html.H1('P', id='logo')]),
+                 children=[html.Img(className="myLogo", src='assets/my_pomo.png')]),
         
         html.Div(className="headerTitleContainer",
                  children=[
@@ -97,7 +106,7 @@ app.layout = html.Div(id='page-container', children=[
         html.Div(className="statsContainer",
                  children=[
                      html.Div(className="summaryValue",
-                              children=[html.H3(f'{grand_total} pomodoros')]),
+                              children=[html.H1(f'{grand_total} pomodoros')]),
                      html.Div(className="summaryType",
                               children=[html.P(f'Total {year}')]),            
                      ]),
@@ -105,14 +114,14 @@ app.layout = html.Div(id='page-container', children=[
         html.Div(className="statsContainer",
                  children=[
                      html.Div(className="summaryValue",
-                              children=[html.H3(f'{str(int(peak_month[0]))} pomodoros')]),
+                              children=[html.H1(f'{str(int(peak_month[0]))} pomodoros')]),
                      html.Div(className="summaryType",
                               children=[html.P(f'Peak month | {peak_month.index[0]}')])
                      ]),
         html.Div(className="statsContainer",
                  children=[
                      html.Div(className="summaryValue",
-                              children=[html.H3(f'{str(int(peak_hours[0]))} pomodoros')]),
+                              children=[html.H1(f'{str(int(peak_hours[0]))} pomodoros')]),
                      html.Div(className="summaryType",
                               children=[html.P(f'Peak hour | {peak_hours.index[0]}:00')])
                      ])
@@ -136,6 +145,10 @@ app.layout = html.Div(id='page-container', children=[
                      
                      dcc.Graph(
         id='daily-per-month'),
+                     
+                     html.Div(className="controlLabel", children=[
+                         "Select Month"
+                         ]),
                      
                         html.Div([
             dcc.Dropdown(
@@ -164,8 +177,10 @@ app.layout = html.Div(id='page-container', children=[
     Input('y-axis-option', 'value'))
 def update_graph(selected_month):
     dff = by_day[by_day['month_name'] == selected_month]
-    fig = px.bar(dff, y='pomodoros', title="Daily Pomodoros per Month")
-    fig.update_layout(transition_duration=500)
+    fig = px.bar(dff, y='pomodoros', title="Daily Pomodoros per Month", labels={
+        'index':'date'})
+    fig.update_layout(transition_duration=500, font_color="#606060")
+    fig.update_traces(marker_color="#FA4F56")
 
     return fig
 
