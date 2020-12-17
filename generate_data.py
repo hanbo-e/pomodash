@@ -6,33 +6,29 @@ Created on Fri Dec 11 10:10:11 2020
 @author: hanbo
 """
 
-'''Creating mock timeseries data'''
+'''Creates mock pomodoro data'''
 
-#from 1.1.2019 to 31.12.2020, daily, 30 minute increments, randomly
-import pandas as pd
 import random
 from pathlib import Path
 
+import pandas as pd
+
 def create_data(times, mask, fraction=0.7):
     '''
-    
-
     Parameters
     ----------
-    times : TYPE
-        DESCRIPTION.
-    mask : TYPE
-        DESCRIPTION.
-    fraction : TYPE, optional
-        DESCRIPTION. The default is 0.7.
+    times : timeseries
+        Time span from which to generate data.
+    mask : boolean
+        Times to be excluded in populating with pomodoros.
+    fraction : float, optional
+        Fraction of times to be populated. The default is 0.7.
 
     Returns
     -------
-    temp : TYPE
-        DESCRIPTION.
-
+    temp : pandas DataFrame
+        A data frame with mock pomodoro data.
     '''
-    
     my_data = generate_pomodoros(times=times, mask=mask, fraction=fraction)
     temp = pd.DataFrame(my_data, columns=['pomodoros'])
     topics = ['coding', 'reading', 'chores', 'email']
@@ -46,22 +42,19 @@ def create_data(times, mask, fraction=0.7):
 
 def generate_pomodoros(times, mask, fraction=0.7):
     '''
-    
-
     Parameters
     ----------
-    times : TYPE
-        DESCRIPTION.
-    mask : TYPE
-        DESCRIPTION.
-    fraction : TYPE, optional
-        DESCRIPTION. The default is 0.7.
+    times : timeseries
+        Time span from which to generate data.
+    mask : boolean
+        Times to be excluded in populating with pomodoros.
+    fraction : float, optional
+        Fraction of times to be populated. The default is 0.7. The default is 0.7.
 
     Returns
     -------
-    my_data : TYPE
-        DESCRIPTION.
-
+    my_data : pandas DataFrame
+        A dataframe populated with values in the 'pomodoros' column but no 'task' column.
     '''
     my_data = times[mask]
     my_data = pd.Series(index=(my_data))
@@ -69,7 +62,6 @@ def generate_pomodoros(times, mask, fraction=0.7):
     my_data.sort_index(inplace=True)
     my_data.fillna(value=1, inplace=True)
     my_data = my_data.resample('30min').asfreq(0)
-    #add data points from midnight?
     return my_data
     
  
@@ -95,4 +87,3 @@ if __name__ == "__main__":
         path = Path('data/data_' + str(i) +'.txt')
         df.to_csv(path)
         i+=1
-        
